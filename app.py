@@ -17,6 +17,7 @@ def serve_page(path):
 
 @app.route("/symbol/<symbol>")
 def get_data(symbol):
+
     params = { 
             'function': 'TIME_SERIES_WEEKLY', 
             'symbol': symbol,
@@ -24,8 +25,10 @@ def get_data(symbol):
             'outputsize': 'full',
             'datatype': 'csv'
             }
+    print(f'Getting symbol data for {symbol} from Alphavantage ...')
     r = requests.get('https://www.alphavantage.co/query', params=params)
     if not r:
+        print(f'GET request for {symbol} failed!')
         abort(404)
 
     # check if the API call succeeded.
@@ -35,13 +38,14 @@ def get_data(symbol):
         pass
     else:
         if 'Error Message' in rsp_json:
+            print(f'Received error "{rsp_json["Error Message"]}" for Symbol {symbol}.')
             abort(404)
-            abort(rsp_json['Error Message'])
 
     # create a CSV reader from the response text.
     f = StringIO(r.text)
     output = make_response(f.getvalue())
     output.headers["Content-Disposition"] = "attachment; filename=export.csv"
     output.headers["Content-type"] = "text/csv"
+    print(f'Returning CSV data for {symbol}')
     return output
     

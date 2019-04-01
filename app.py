@@ -1,4 +1,5 @@
 from flask import Flask, abort
+from flask_heroku import Heroku
 from flask import make_response, send_from_directory
 import requests
 from io import StringIO
@@ -6,6 +7,7 @@ import csv
 import json
 
 app = Flask(__name__)
+heroku = Heroku(app)
 
 @app.route("/")
 def hello():
